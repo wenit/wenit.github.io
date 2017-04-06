@@ -270,12 +270,206 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/04/06/jvisualvm-monitor-tomcat/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="wenit">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/assets/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="wenit blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2017/04/06/jvisualvm-monitor-tomcat/" itemprop="url">
+                  使用Visual VM远程监控tomcat
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-06T16:04:42+08:00">
+                2017-04-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index">
+                    <span itemprop="name">java</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/tomcat/" itemprop="url" rel="index">
+                    <span itemprop="name">tomcat</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2017/04/06/jvisualvm-monitor-tomcat/" class="leancloud_visitors" data-flag-title="使用Visual VM远程监控tomcat">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数 </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <hr>
+<h1 id="1-介绍"><a href="#1-介绍" class="headerlink" title="1.介绍"></a>1.介绍</h1><blockquote>
+<p>本文介绍，如何使用java自带的Visual VM工具，监控远程tomcat。<br>Visual VM是JDK自带的一款全能型性能监控和故障分析工具，包括对CPU使用、JVM堆内存消耗、线程、类加载的实时监控，内存dump文件分析，垃圾回收运行情况的可视化分析等，对故障排查和性能调优很有帮助。在windows中安装JDK后，VisualVM位于%JAVA_HOME%/bin/下，直接执行jvisualvm.exe即可，一个主要运行界面：</p>
+</blockquote>
+<p><img src="/assets/images/article/jvisualvm.png" alt="VisualVM"></p>
+<h1 id="2-环境准备"><a href="#2-环境准备" class="headerlink" title="2.环境准备"></a>2.环境准备</h1><p>我们需要先检查linux的hostname匹配的IP，执行<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">hostname -i</div></pre></td></tr></table></figure></p>
+<p>如果匹配的结果是无法识别或者127.0.0.1, 则需要手动配置主机名和IP映射。假设要用于建立连接的IP是192.168.88.135，主机名是zwb-redhat-6.4：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">vi /etc/hosts</div><div class="line"></div><div class="line"><span class="comment">#添加如下内容</span></div><div class="line">192.168.88.135 zwb-redhat-6.4</div></pre></td></tr></table></figure>
+<h1 id="3-配置JMX"><a href="#3-配置JMX" class="headerlink" title="3.配置JMX"></a>3.配置JMX</h1><ol>
+<li>进入tomcat的安装目录 <strong>$TOMCAT_HOME</strong> 如 <strong>/opt/apache-tomcat-8.0.21</strong></li>
+<li>修改bin/catalina.sh文件</li>
+<li>在行首添加如下内容：</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">JAVA_OPTS=$JAVA_OPTS&quot; -Dcom.sun.management.jmxremote.port=1099 -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false&quot;</div></pre></td></tr></table></figure>
+<h1 id="配置Visual-VM"><a href="#配置Visual-VM" class="headerlink" title="配置Visual VM"></a>配置Visual VM</h1><ol>
+<li>进入JDK安装目录</li>
+<li>打开bin/jvisualvm.exe</li>
+<li><p>右击”远程”-&gt;”添加远程主机”</p>
+<p><img src="/assets/images/article/jvisualvm-1.png" alt="VisualVM 添加远程主机"></p>
+</li>
+<li><p>选择添加的主机，右击主机</p>
+<p><img src="/assets/images/article/jvisualvm-2.png" alt="VisualVM 添加jmx"></p>
+</li>
+<li><p>选择添加的主机，右击主机</p>
+<p><img src="/assets/images/article/jvisualvm-3.png" alt="VisualVM 添加jmx"></p>
+</li>
+<li><p>双击显示的进程，打开监控</p>
+<p><img src="/assets/images/article/jvisualvm-4.png" alt="VisualVM 添加jmx"></p>
+</li>
+</ol>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/04/05/index/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="wenit">
       <meta itemprop="description" content="">
-      <meta itemprop="image" content="/uploads/avatar.jpg">
+      <meta itemprop="image" content="/assets/uploads/avatar.png">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -449,7 +643,7 @@
       <section class="site-overview sidebar-panel sidebar-panel-active">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
-               src="/uploads/avatar.jpg"
+               src="/assets/uploads/avatar.png"
                alt="wenit" />
           <p class="site-author-name" itemprop="name">wenit</p>
            
@@ -461,7 +655,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-count">2</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -472,7 +666,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-count">3</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -483,7 +677,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-count">3</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
