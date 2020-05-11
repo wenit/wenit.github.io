@@ -1,0 +1,10 @@
+{
+  "filename": "base.md",
+  "__html": "<h2>string与[]byte相互转换</h2>\n<p>string 不能直接和byte数组转换</p>\n<p>string可以和byte的切片转换</p>\n<h3>string转为[]byte</h3>\n<pre><code class=\"language-go\"><span class=\"hljs-keyword\">var</span> str <span class=\"hljs-keyword\">string</span> = <span class=\"hljs-string\">\"test\"</span>\n<span class=\"hljs-keyword\">var</span> data []<span class=\"hljs-keyword\">byte</span> = []<span class=\"hljs-keyword\">byte</span>(str)\n</code></pre>\n<h3>byte转为string</h3>\n<pre><code class=\"language-go\"><span class=\"hljs-keyword\">var</span> data [<span class=\"hljs-number\">10</span>]<span class=\"hljs-keyword\">byte</span> \n<span class=\"hljs-keyword\">byte</span>[<span class=\"hljs-number\">0</span>] = <span class=\"hljs-string\">'T'</span>\n<span class=\"hljs-keyword\">byte</span>[<span class=\"hljs-number\">1</span>] = <span class=\"hljs-string\">'E'</span>\n<span class=\"hljs-keyword\">var</span> str <span class=\"hljs-keyword\">string</span> = <span class=\"hljs-keyword\">string</span>(data[:])\n</code></pre>\n",
+  "link": "/zh-cn/docs/go/base.html",
+  "meta": {
+    "title": "go基础知识",
+    "keywords": "go,byte",
+    "description": "go基础知识"
+  }
+}
